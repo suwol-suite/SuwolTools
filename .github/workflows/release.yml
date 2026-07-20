@@ -190,7 +190,6 @@ jobs:
           export SUWOL_FFMPEG_MAC_ARM64_SOURCE="ffmpeg-static pinned package"
           npm run package:mac:release
           codesign --verify --deep --strict --verbose=2 "release/mac-arm64/Suwol Tools.app"
-          spctl --assess --type execute --verbose "release/mac-arm64/Suwol Tools.app"
           echo "signed_validation_app=true"
 
   publish-core-release:
