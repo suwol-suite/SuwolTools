@@ -36,5 +36,9 @@ await build({
   root: resolve(root, "apps/desktop/src/renderer"),
   plugins: [react()],
   resolve: { alias },
+  // BrowserWindow.loadFile() needs assets relative to dist-renderer/index.html.
+  // Absolute /assets URLs resolve to file:///assets/... and produce a blank
+  // renderer in packaged Electron builds.
+  base: "./",
   build: { outDir: resolve(root, "dist-renderer"), emptyOutDir: true, chunkSizeWarningLimit: 500, modulePreload: false, rollupOptions: { input: resolve(root, "apps/desktop/src/renderer/index.html"), output: rendererOutput } },
 });
