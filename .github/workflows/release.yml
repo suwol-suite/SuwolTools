@@ -176,26 +176,21 @@ jobs:
           if (manifest.binaries["mac-arm64"]?.sha256 !== digest) throw new Error("FFmpeg manifest digest mismatch");
           console.log("FFmpeg mac-arm64 SHA-256 verified");
           NODE
-      - name: Verify codesign can create a signed app
+      - name: Verify electron-builder can create a signed app
         shell: bash
         env:
-          MAC_DEVELOPER_IDENTITY: Developer ID Application
+          CSC_LINK: ${{ secrets.CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+          REQUIRE_MAC_SIGNING: 1
         run: |
           set -euo pipefail
-          login_keychain="$HOME/Library/Keychains/login.keychain-db"
-          signing_identity=$(security find-identity -v -p codesigning | sed -n 's/.*"\(Developer ID Application:.*\)"/\1/p' | head -n 1)
-          [[ -n "$signing_identity" ]] || { echo "Developer ID Application identity not found"; exit 1; }
-          app="$RUNNER_TEMP/suwol-tools-signing-validation.app"
-          rm -rf "$app"
-          mkdir -p "$app/Contents/MacOS"
-          cp /usr/bin/true "$app/Contents/MacOS/suwol-tools-signing-validation"
-          cat > "$app/Contents/Info.plist" <<'PLIST'
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0"><dict><key>CFBundleExecutable</key><string>suwol-tools-signing-validation</string><key>CFBundleIdentifier</key><string>com.suwol.tools.signing-validation</string><key>CFBundleName</key><string>Suwol Tools Signing Validation</string><key>CFBundleVersion</key><string>1</string><key>CFBundleShortVersionString</key><string>1.0</string></dict></plist>
-          PLIST
-          codesign --force --options runtime --keychain "$login_keychain" --sign "$signing_identity" "$app"
-          codesign --verify --deep --strict --verbose=2 "$app"
+          ffmpeg_path="$(node -p "require('ffmpeg-static')")"
+          export SUWOL_FFMPEG_MAC_ARM64="$ffmpeg_path"
+          export SUWOL_FFMPEG_MAC_ARM64_SHA256="$(shasum -a 256 "$ffmpeg_path" | cut -d' ' -f1)"
+          export SUWOL_FFMPEG_MAC_ARM64_SOURCE="ffmpeg-static pinned package"
+          npm run package:mac:release
+          codesign --verify --deep --strict --verbose=2 "release/mac-arm64/Suwol Tools.app"
+          spctl --assess --type execute --verbose "release/mac-arm64/Suwol Tools.app"
           echo "signed_validation_app=true"
 
   publish-core-release:
