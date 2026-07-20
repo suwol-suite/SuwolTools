@@ -1,5 +1,6 @@
 appId: com.suwol.tools
 productName: Suwol Tools
+icon: build/icons/icon.png
 artifactName: ${productName}-${version}-${os}-${arch}.${ext}
 asar: true
 forceCodeSigning: false
@@ -33,6 +34,9 @@ nsis:
   oneClick: false
   allowToChangeInstallationDirectory: true
   deleteAppDataOnUninstall: false
+  installerIcon: build/icons/icon.ico
+  installerHeaderIcon: build/icons/icon.ico
+  uninstallerIcon: build/icons/icon.ico
 portable:
   artifactName: ${productName}-${version}-win-${arch}-portable.${ext}
 mac:
@@ -50,6 +54,7 @@ mac:
   entitlementsInherit: build/entitlements.mac.inherit.plist
 linux:
   icon: build/icons
+  syncDesktopName: true
   artifactName: ${productName}-${version}-linux-x64.${ext}
   target:
     - target: AppImage

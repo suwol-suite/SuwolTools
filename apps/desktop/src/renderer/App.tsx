@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect, useMemo, useRef, useState, type ChangeEvent,
 import type { FileIoAdapter, PlatformOutput, ResolvedInput } from "@suwol/core";
 import { categories, defaultOutputTarget, defaultSettings, getToolById, tools, type AppSettings, type InputItem, type InputSource, type Job, type OutputTarget, type UpdateState } from "@suwol/shared";
 import type { FeatureProps } from "./features/shared";
+import appIconUrl from "../../../../build/icons/icon-256.png";
 
 const desktopFeatures: Record<string, LazyExoticComponent<ComponentType<FeatureProps>>> = {
   "image-editor": lazy(() => import("./features/image-editor/ImageEditorFeature")),
@@ -72,6 +73,13 @@ export function App() {
     return () => { removeJobs(); removeUpdates(); };
   }, [isElectron]);
 
+  useEffect(() => {
+    let link = document.querySelector<HTMLLinkElement>('link[rel="icon"]');
+    if (!link) { link = document.createElement("link"); link.rel = "icon"; document.head.appendChild(link); }
+    link.type = "image/png";
+    link.href = appIconUrl;
+  }, []);
+
   useEffect(() => { const handler = (event: KeyboardEvent) => { if (event.key === "/" && document.activeElement?.tagName !== "INPUT" && document.activeElement?.tagName !== "TEXTAREA") { event.preventDefault(); searchRef.current?.focus(); } if (event.key === "Escape") searchRef.current?.blur(); }; window.addEventListener("keydown", handler); return () => window.removeEventListener("keydown", handler); }, []);
   useEffect(() => { const handler = (event: ClipboardEvent) => { const currentTool = getToolById(selectedToolId); if (document.activeElement?.tagName === "INPUT" || document.activeElement?.tagName === "TEXTAREA") return; if (!currentTool?.capabilities.includes("clipboard")) return; if (isElectron && currentTool.inputFormats.includes("image") && event.clipboardData?.items.length) { event.preventDefault(); void window.suwol!.clipboard.createImageSource().then(rememberInput).catch(() => undefined); return; } if (!currentTool.inputFormats.includes("text")) return; const pasted = event.clipboardData?.getData("text/plain"); if (!pasted) return; if (legacyTextToolIds.has(currentTool.id)) setTextDraft(pasted); else { const file = new File([pasted], "clipboard.txt", { type: "text/plain" }); rememberInput(toWebSource([file])); } }; window.addEventListener("paste", handler); return () => window.removeEventListener("paste", handler); }, [isElectron, selectedToolId]);
 
@@ -134,7 +142,7 @@ export function App() {
 
   return <div className="app-shell">
     <aside className={`sidebar${settings.sidebarCollapsed ? " sidebar--collapsed" : ""}`}>
-      <div className="brand"><span className="brand-mark">S</span>{!settings.sidebarCollapsed && <span><strong>Suwol</strong><small>Tools</small></span>}</div>
+      <div className="brand"><img className="brand-mark" src={appIconUrl} alt="Suwol Tools" />{!settings.sidebarCollapsed && <span><strong>Suwol</strong><small>Tools</small></span>}</div>
       {!settings.sidebarCollapsed && <>
         <div className="search-wrap"><input ref={searchRef} value={query} onChange={(event) => setQuery(event.target.value)} placeholder="도구 검색…  /" aria-label="도구 검색" /></div>
         <nav className="quick-nav"><button onClick={() => { setQuery(""); setShowJobs(false); }}>⌂ 홈</button><button onClick={() => setQuery("__favorites__")}>★ 즐겨찾기 <em>{settings.favorites.length}</em></button><button onClick={() => setQuery("__recent__")}>◷ 최근 사용 <em>{settings.recentTools.length}</em></button><button onClick={() => setShowJobs(true)}>▣ 작업 센터 <em>{activeJobs.length}</em></button></nav>

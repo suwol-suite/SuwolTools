@@ -64,4 +64,4 @@ macOS·Linux 자동 업데이트는 설정의 자동 확인 옵션을 따르며 
 - pause/resume/cancel/retry, 충돌 정책, 결과 열기
 - Windows Defender/SmartScreen 오탐 및 서명 상태
 
-Electron 기본 아이콘 대신 `assets/icon.svg`에서 생성한 `build/icons/icon.ico`, `icon.icns`, PNG 세트를 사용합니다.
+Electron 기본 아이콘 대신 `assets/icon.png`에서 생성한 `build/icons/icon.ico`, `icon.icns`, PNG 세트를 사용합니다. 생성 결과의 SHA-256과 크기 정보는 `build/icons/manifest.json`에 기록되며 `npm run icons:check`로 재검증합니다. `electron-builder.yml`은 공통 PNG, Windows ICO/NSIS installer·uninstaller, macOS ICNS, Linux icon directory를 모두 같은 생성 결과에 연결합니다. 로컬 macOS에서 생성한 패키지는 signing identity가 없으면 unsigned로 남고, 정식 서명·공증은 기존 Mac Studio ARM64 GitHub runner에서만 완료 처리합니다.

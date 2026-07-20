@@ -1,0 +1,71 @@
+{
+  "version": 1,
+  "source": {
+    "path": "assets/icon.png",
+    "sha256": "9589ac996ffc13747c6f40932245b2666bef735322c2d1e8b0d5eb7634999f50",
+    "width": 1254,
+    "height": 1254,
+    "hasAlpha": true,
+    "colorSpace": "srgb",
+    "upscaled": false
+  },
+  "canvas": {
+    "width": 1024,
+    "height": 1024,
+    "safeMarginPercent": 8
+  },
+  "outputs": {
+    "icon.png": {
+      "sha256": "7b6ef88019cc8fc5c48fae077a1e78c4e5a8791eedae72b6c7c1cfe5e3b98ac0",
+      "bytes": 1312270
+    },
+    "icon-16.png": {
+      "sha256": "c03d235db9367a7e55d12c39bf3b2932cd7da22be5f005e9e92995988a1e6801",
+      "bytes": 858
+    },
+    "icon-24.png": {
+      "sha256": "ebebd8c74013389410f00e2c7f399539db9c328a913e489e8cdddcf995151a44",
+      "bytes": 1737
+    },
+    "icon-32.png": {
+      "sha256": "cf68f8b9844c0d9e5f3631101bc2b1a68f0bb741c88b732ee13d520ae511ff7c",
+      "bytes": 2736
+    },
+    "icon-48.png": {
+      "sha256": "c44b6de58d8c017ebd9ae61350412844b61fed71d029481ff80ddf962b91ed5e",
+      "bytes": 5331
+    },
+    "icon-64.png": {
+      "sha256": "2bfe7b61646c94bd0500b78a65c1bdecccd71d96b4d8678972be375bbb80ae9b",
+      "bytes": 8644
+    },
+    "icon-96.png": {
+      "sha256": "04d8040b089c5efb91cf2faa9747d07346c56dfd0075e8bac2d8a62c49d02baf",
+      "bytes": 17451
+    },
+    "icon-128.png": {
+      "sha256": "d2ba45ec906efe20fc69e773e124a8593dad661b6f540487520dd3476d22b4bb",
+      "bytes": 28515
+    },
+    "icon-256.png": {
+      "sha256": "2ade0cfbe4ce876ac7ef3f80b7974dc7cce45197b61605649e91739fc53cbc0c",
+      "bytes": 95175
+    },
+    "icon-512.png": {
+      "sha256": "6f4a01f74e448562c564bad1efb9e9d0d149cab8dcb2a334273eda63e0a5de54",
+      "bytes": 347795
+    },
+    "icon-1024.png": {
+      "sha256": "7b6ef88019cc8fc5c48fae077a1e78c4e5a8791eedae72b6c7c1cfe5e3b98ac0",
+      "bytes": 1312270
+    },
+    "icon.ico": {
+      "sha256": "72a08c6b7d6bbff6350cc75fc464e92a9f521ae02683d73a9cde9a0a709ec44a",
+      "bytes": 148269
+    },
+    "icon.icns": {
+      "sha256": "b16e642e6a3ecc4e2a49af98115ea07dbec8d24ea216bf599052ae6b6b808cbe",
+      "bytes": 2206994
+    }
+  }
+}
