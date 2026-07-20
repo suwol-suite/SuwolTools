@@ -191,6 +191,13 @@ jobs:
           npm run package:mac:release
           codesign --verify --deep --strict --verbose=2 "release/mac-arm64/Suwol Tools.app"
           echo "signed_validation_app=true"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: suwol-tools-mac-validation
+          path: |
+            release/*-mac-arm64.dmg
+            release/*-mac-arm64.zip
+          if-no-files-found: error
 
   publish-core-release:
     needs: [prepare, windows, linux]
