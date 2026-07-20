@@ -1,0 +1,48 @@
+import type { CountryNameData } from "@/data/names/types";
+
+export const hiIN: CountryNameData = {
+  id: "hi-IN",
+  countryKey: "countries.hi-IN",
+  nativeLabel: "भारत",
+  nameOrder: "given-family",
+  surnames: [
+    "Sharma",
+    "Verma",
+    "Patel",
+    "Gupta",
+    "Singh",
+    "Kumar",
+    "Das",
+    "Rao",
+    "Iyer",
+    "Nair",
+    "Mehta",
+    "Joshi",
+  ],
+  maleGivenNames: [
+    "Aarav",
+    "Vivaan",
+    "Aditya",
+    "Arjun",
+    "Reyansh",
+    "Krishna",
+    "Ishaan",
+    "Kabir",
+    "Rohan",
+    "Dev",
+  ],
+  femaleGivenNames: [
+    "Ananya",
+    "Diya",
+    "Aadhya",
+    "Saanvi",
+    "Myra",
+    "Ira",
+    "Avni",
+    "Kiara",
+    "Anika",
+    "Meera",
+  ],
+  neutralGivenNames: ["Arya", "Kiran", "Sai", "Aadi", "Nila", "Rumi"],
+};
+

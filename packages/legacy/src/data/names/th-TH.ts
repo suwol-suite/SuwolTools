@@ -1,0 +1,46 @@
+import type { CountryNameData } from "@/data/names/types";
+
+export const thTH: CountryNameData = {
+  id: "th-TH",
+  countryKey: "countries.th-TH",
+  nativeLabel: "ไทย",
+  nameOrder: "given-family",
+  surnames: [
+    "Sukhum",
+    "Chaiyan",
+    "Kittisak",
+    "Srisai",
+    "Wongsa",
+    "Phanich",
+    "Rattanakul",
+    "Somchai",
+    "Narin",
+    "Chaiprasit",
+  ],
+  maleGivenNames: [
+    "Arun",
+    "Niran",
+    "Kiet",
+    "Somchai",
+    "Anan",
+    "Chai",
+    "Kawin",
+    "Tawan",
+    "Phum",
+    "Saran",
+  ],
+  femaleGivenNames: [
+    "Mali",
+    "Kanya",
+    "Anong",
+    "Siriporn",
+    "Naree",
+    "Pim",
+    "Lalana",
+    "Mayuree",
+    "Suda",
+    "Nisa",
+  ],
+  neutralGivenNames: ["Niran", "Tawan", "Pim", "Dao", "Suri", "Kwan"],
+};
+

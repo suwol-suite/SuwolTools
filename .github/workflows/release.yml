@@ -142,7 +142,7 @@ jobs:
     needs: [prepare, publish-core-release]
     if: needs.prepare.outputs.is_tag == 'true'
     continue-on-error: true
-    runs-on: [self-hosted, macOS, ARM64]
+    runs-on: [self-hosted, macos, macos-arm64, mac-mini-m4]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -163,7 +163,7 @@ jobs:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
-          NOTARYTOOL_PROFILE: suwol-tools-notary-profile
+          NOTARYTOOL_PROFILE: suwol-notary-profile
         run: |
           if ! xcrun notarytool history --keychain-profile "$NOTARYTOOL_PROFILE" >/dev/null 2>&1; then
             xcrun notarytool store-credentials "$NOTARYTOOL_PROFILE" --apple-id "$APPLE_ID" --team-id "$APPLE_TEAM_ID" --password "$APPLE_APP_SPECIFIC_PASSWORD"

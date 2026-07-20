@@ -1,0 +1,48 @@
+import type { CountryNameData } from "@/data/names/types";
+
+export const frFR: CountryNameData = {
+  id: "fr-FR",
+  countryKey: "countries.fr-FR",
+  nativeLabel: "France",
+  nameOrder: "given-family",
+  surnames: [
+    "Martin",
+    "Bernard",
+    "Dubois",
+    "Thomas",
+    "Robert",
+    "Richard",
+    "Petit",
+    "Durand",
+    "Leroy",
+    "Moreau",
+    "Simon",
+    "Laurent",
+  ],
+  maleGivenNames: [
+    "Lucas",
+    "Gabriel",
+    "Louis",
+    "Arthur",
+    "Jules",
+    "Adam",
+    "Hugo",
+    "Raphael",
+    "Leo",
+    "Noah",
+  ],
+  femaleGivenNames: [
+    "Emma",
+    "Louise",
+    "Jade",
+    "Alice",
+    "Chloe",
+    "Lina",
+    "Rose",
+    "Anna",
+    "Mila",
+    "Lea",
+  ],
+  neutralGivenNames: ["Camille", "Sacha", "Noa", "Charlie", "Alix", "Lou"],
+};
+

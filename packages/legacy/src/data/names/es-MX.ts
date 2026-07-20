@@ -1,0 +1,48 @@
+import type { CountryNameData } from "@/data/names/types";
+
+export const esMX: CountryNameData = {
+  id: "es-MX",
+  countryKey: "countries.es-MX",
+  nativeLabel: "México",
+  nameOrder: "given-family",
+  surnames: [
+    "Hernandez",
+    "Garcia",
+    "Martinez",
+    "Lopez",
+    "Gonzalez",
+    "Perez",
+    "Rodriguez",
+    "Sanchez",
+    "Ramirez",
+    "Cruz",
+    "Flores",
+    "Gomez",
+  ],
+  maleGivenNames: [
+    "Santiago",
+    "Mateo",
+    "Sebastian",
+    "Leonardo",
+    "Matias",
+    "Emiliano",
+    "Diego",
+    "Miguel",
+    "Daniel",
+    "Javier",
+  ],
+  femaleGivenNames: [
+    "Sofia",
+    "Valentina",
+    "Regina",
+    "Maria",
+    "Camila",
+    "Ximena",
+    "Renata",
+    "Lucia",
+    "Natalia",
+    "Isabella",
+  ],
+  neutralGivenNames: ["Alex", "Cruz", "Angel", "Ariel", "Guadalupe", "Sol"],
+};
+

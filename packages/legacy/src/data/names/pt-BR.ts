@@ -1,0 +1,48 @@
+import type { CountryNameData } from "@/data/names/types";
+
+export const ptBR: CountryNameData = {
+  id: "pt-BR",
+  countryKey: "countries.pt-BR",
+  nativeLabel: "Brasil",
+  nameOrder: "given-family",
+  surnames: [
+    "Silva",
+    "Santos",
+    "Oliveira",
+    "Souza",
+    "Rodrigues",
+    "Ferreira",
+    "Almeida",
+    "Costa",
+    "Gomes",
+    "Martins",
+    "Rocha",
+    "Barbosa",
+  ],
+  maleGivenNames: [
+    "Miguel",
+    "Arthur",
+    "Heitor",
+    "Theo",
+    "Davi",
+    "Gabriel",
+    "Bernardo",
+    "Samuel",
+    "Joao",
+    "Pedro",
+  ],
+  femaleGivenNames: [
+    "Helena",
+    "Alice",
+    "Laura",
+    "Maria",
+    "Valentina",
+    "Heloisa",
+    "Sophia",
+    "Isabella",
+    "Manuela",
+    "Julia",
+  ],
+  neutralGivenNames: ["Alex", "Ariel", "Noa", "Sasha", "Dominique", "Niki"],
+};
+

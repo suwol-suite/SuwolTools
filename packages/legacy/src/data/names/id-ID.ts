@@ -1,0 +1,46 @@
+import type { CountryNameData } from "@/data/names/types";
+
+export const idID: CountryNameData = {
+  id: "id-ID",
+  countryKey: "countries.id-ID",
+  nativeLabel: "Indonesia",
+  nameOrder: "given-family",
+  surnames: [
+    "Wijaya",
+    "Santoso",
+    "Saputra",
+    "Pratama",
+    "Wibowo",
+    "Halim",
+    "Suryanto",
+    "Setiawan",
+    "Kusuma",
+    "Permana",
+  ],
+  maleGivenNames: [
+    "Bima",
+    "Adi",
+    "Raka",
+    "Dimas",
+    "Fajar",
+    "Rizky",
+    "Bayu",
+    "Arif",
+    "Nanda",
+    "Jaya",
+  ],
+  femaleGivenNames: [
+    "Ayu",
+    "Sari",
+    "Dewi",
+    "Putri",
+    "Nadia",
+    "Lestari",
+    "Rina",
+    "Maya",
+    "Intan",
+    "Citra",
+  ],
+  neutralGivenNames: ["Rizky", "Dwi", "Nanda", "Cahya", "Tirta", "Ari"],
+};
+

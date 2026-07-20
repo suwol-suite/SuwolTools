@@ -5,8 +5,8 @@
       "@suwol/shared": ["packages/shared/src/index.ts"],
       "@suwol/core": ["packages/core/src/index.ts"],
       "@legacy/lib/*": ["packages/core/src/legacy-typings/lib/*"],
-      "@legacy/*": ["../SuwolWebTools/src/*"],
-      "@/*": ["../SuwolWebTools/src/*"]
+      "@legacy/*": ["packages/legacy/src/*"],
+      "@/*": ["packages/legacy/src/*"]
     },
     "target": "ES2022",
     "strict": true,

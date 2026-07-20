@@ -8,7 +8,7 @@ const release = path.join(root, "release");
 const names = await (await import("node:fs/promises")).readdir(release);
 const dmg = process.argv[2] ? path.resolve(process.argv[2]) : path.join(release, names.find((name) => /-mac-arm64\.dmg$/i.test(name)) ?? "");
 await access(dmg);
-const profile = process.env.NOTARYTOOL_PROFILE ?? "suwol-tools-notary-profile";
+const profile = process.env.NOTARYTOOL_PROFILE ?? "suwol-notary-profile";
 await mkdir(path.join(root, "diagnostics"), { recursive: true });
 try {
   const result = await exec("xcrun", ["notarytool", "submit", dmg, "--keychain-profile", profile, "--wait", "--output-format", "json"], { maxBuffer: 4 * 1024 * 1024 });

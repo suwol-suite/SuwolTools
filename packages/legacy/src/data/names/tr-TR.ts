@@ -1,0 +1,46 @@
+import type { CountryNameData } from "@/data/names/types";
+
+export const trTR: CountryNameData = {
+  id: "tr-TR",
+  countryKey: "countries.tr-TR",
+  nativeLabel: "Türkiye",
+  nameOrder: "given-family",
+  surnames: [
+    "Yilmaz",
+    "Kaya",
+    "Demir",
+    "Celik",
+    "Sahin",
+    "Yildiz",
+    "Ozturk",
+    "Aydin",
+    "Ozdemir",
+    "Arslan",
+  ],
+  maleGivenNames: [
+    "Emir",
+    "Mert",
+    "Eymen",
+    "Yusuf",
+    "Arda",
+    "Kerem",
+    "Deniz",
+    "Can",
+    "Burak",
+    "Kaan",
+  ],
+  femaleGivenNames: [
+    "Zeynep",
+    "Elif",
+    "Mira",
+    "Ecrin",
+    "Azra",
+    "Defne",
+    "Duru",
+    "Ada",
+    "Yagmur",
+    "Selin",
+  ],
+  neutralGivenNames: ["Deniz", "Derya", "Ekin", "Evren", "Ilke", "Ozge"],
+};
+

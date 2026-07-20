@@ -1,0 +1,48 @@
+import type { CountryNameData } from "@/data/names/types";
+
+export const esES: CountryNameData = {
+  id: "es-ES",
+  countryKey: "countries.es-ES",
+  nativeLabel: "España",
+  nameOrder: "given-family",
+  surnames: [
+    "Garcia",
+    "Rodriguez",
+    "Gonzalez",
+    "Fernandez",
+    "Lopez",
+    "Martinez",
+    "Sanchez",
+    "Perez",
+    "Gomez",
+    "Martin",
+    "Jimenez",
+    "Ruiz",
+  ],
+  maleGivenNames: [
+    "Hugo",
+    "Mateo",
+    "Martin",
+    "Lucas",
+    "Leo",
+    "Daniel",
+    "Alejandro",
+    "Pablo",
+    "Manuel",
+    "Alvaro",
+  ],
+  femaleGivenNames: [
+    "Lucia",
+    "Sofia",
+    "Martina",
+    "Maria",
+    "Julia",
+    "Paula",
+    "Valeria",
+    "Emma",
+    "Daniela",
+    "Carla",
+  ],
+  neutralGivenNames: ["Alex", "Cruz", "Noa", "Andrea", "Ariel", "Sol"],
+};
+

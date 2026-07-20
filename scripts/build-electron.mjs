@@ -4,8 +4,8 @@ import react from "@vitejs/plugin-react";
 import { resolve } from "node:path";
 
 const root = process.cwd();
-const alias = { "@suwol/shared": resolve(root, "packages/shared/src"), "@suwol/core": resolve(root, "packages/core/src"), "@legacy": resolve(root, "../SuwolWebTools/src"), "@": resolve(root, "../SuwolWebTools/src") };
-const rendererOutput = { manualChunks(id) { if (id.includes("pdf-lib")) return "vendor-pdf"; if (id.includes("jszip")) return "vendor-zip"; if (id.includes("packages/core/src")) return "tool-processors"; if (id.includes("SuwolWebTools/src")) return "legacy-tools"; return undefined; } };
+const alias = { "@suwol/shared": resolve(root, "packages/shared/src"), "@suwol/core": resolve(root, "packages/core/src"), "@legacy": resolve(root, "packages/legacy/src"), "@": resolve(root, "packages/legacy/src") };
+const rendererOutput = { manualChunks(id) { if (id.includes("pdf-lib")) return "vendor-pdf"; if (id.includes("jszip")) return "vendor-zip"; if (id.includes("packages/core/src")) return "tool-processors"; if (id.includes("packages/legacy/src")) return "legacy-tools"; return undefined; } };
 
 await build({
   plugins: [externalizeDepsPlugin()],

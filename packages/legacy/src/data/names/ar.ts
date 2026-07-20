@@ -1,0 +1,46 @@
+import type { CountryNameData } from "@/data/names/types";
+
+export const arNames: CountryNameData = {
+  id: "ar",
+  countryKey: "countries.ar",
+  nativeLabel: "العربية",
+  nameOrder: "given-family",
+  surnames: [
+    "Haddad",
+    "Mansour",
+    "Nasser",
+    "Saleh",
+    "Khalil",
+    "Farah",
+    "Youssef",
+    "Said",
+    "Darwish",
+    "Habib",
+  ],
+  maleGivenNames: [
+    "Omar",
+    "Adam",
+    "Youssef",
+    "Amir",
+    "Karim",
+    "Hassan",
+    "Zayd",
+    "Tariq",
+    "Samir",
+    "Rami",
+  ],
+  femaleGivenNames: [
+    "Layla",
+    "Maya",
+    "Amina",
+    "Nour",
+    "Sara",
+    "Lina",
+    "Yasmin",
+    "Hana",
+    "Mariam",
+    "Rania",
+  ],
+  neutralGivenNames: ["Noor", "Sama", "Jude", "Rayan", "Sahar", "Amal"],
+};
+

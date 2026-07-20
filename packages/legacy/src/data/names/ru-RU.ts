@@ -1,0 +1,48 @@
+import type { CountryNameData } from "@/data/names/types";
+
+export const ruRU: CountryNameData = {
+  id: "ru-RU",
+  countryKey: "countries.ru-RU",
+  nativeLabel: "Россия",
+  nameOrder: "given-family",
+  surnames: [
+    "Ivanov",
+    "Smirnov",
+    "Kuznetsov",
+    "Popov",
+    "Sokolov",
+    "Lebedev",
+    "Kozlov",
+    "Novikov",
+    "Morozov",
+    "Volkov",
+    "Pavlov",
+    "Fedorov",
+  ],
+  maleGivenNames: [
+    "Alexander",
+    "Mikhail",
+    "Ivan",
+    "Dmitry",
+    "Artem",
+    "Nikita",
+    "Maxim",
+    "Ilya",
+    "Egor",
+    "Kirill",
+  ],
+  femaleGivenNames: [
+    "Sofia",
+    "Anastasia",
+    "Maria",
+    "Anna",
+    "Victoria",
+    "Polina",
+    "Daria",
+    "Elena",
+    "Alina",
+    "Kira",
+  ],
+  neutralGivenNames: ["Sasha", "Zhenya", "Valya", "Misha", "Nika", "Alex"],
+};
+

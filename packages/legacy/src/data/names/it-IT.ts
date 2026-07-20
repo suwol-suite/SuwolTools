@@ -1,0 +1,48 @@
+import type { CountryNameData } from "@/data/names/types";
+
+export const itIT: CountryNameData = {
+  id: "it-IT",
+  countryKey: "countries.it-IT",
+  nativeLabel: "Italia",
+  nameOrder: "given-family",
+  surnames: [
+    "Rossi",
+    "Russo",
+    "Ferrari",
+    "Esposito",
+    "Bianchi",
+    "Romano",
+    "Colombo",
+    "Ricci",
+    "Marino",
+    "Greco",
+    "Bruno",
+    "Gallo",
+  ],
+  maleGivenNames: [
+    "Leonardo",
+    "Francesco",
+    "Alessandro",
+    "Lorenzo",
+    "Mattia",
+    "Tommaso",
+    "Gabriele",
+    "Riccardo",
+    "Andrea",
+    "Edoardo",
+  ],
+  femaleGivenNames: [
+    "Sofia",
+    "Giulia",
+    "Aurora",
+    "Ginevra",
+    "Alice",
+    "Beatrice",
+    "Emma",
+    "Giorgia",
+    "Vittoria",
+    "Matilde",
+  ],
+  neutralGivenNames: ["Andrea", "Alex", "Noa", "Sasha", "Elia", "Niki"],
+};
+

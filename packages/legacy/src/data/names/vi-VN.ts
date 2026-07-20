@@ -1,0 +1,48 @@
+import type { CountryNameData } from "@/data/names/types";
+
+export const viVN: CountryNameData = {
+  id: "vi-VN",
+  countryKey: "countries.vi-VN",
+  nativeLabel: "Việt Nam",
+  nameOrder: "family-given",
+  surnames: [
+    "Nguyễn",
+    "Trần",
+    "Lê",
+    "Phạm",
+    "Hoàng",
+    "Huỳnh",
+    "Phan",
+    "Vũ",
+    "Võ",
+    "Đặng",
+    "Bùi",
+    "Đỗ",
+  ],
+  maleGivenNames: [
+    "Minh",
+    "An",
+    "Khang",
+    "Duy",
+    "Nam",
+    "Long",
+    "Huy",
+    "Quang",
+    "Tuấn",
+    "Khôi",
+  ],
+  femaleGivenNames: [
+    "Linh",
+    "Anh",
+    "My",
+    "Thảo",
+    "Vy",
+    "Nhi",
+    "Trang",
+    "Hà",
+    "Ngọc",
+    "Phương",
+  ],
+  neutralGivenNames: ["An", "Minh", "Bình", "Khánh", "Thanh", "Gia"],
+};
+

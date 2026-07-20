@@ -1,0 +1,46 @@
+import type { CountryNameData } from "@/data/names/types";
+
+export const filPH: CountryNameData = {
+  id: "fil-PH",
+  countryKey: "countries.fil-PH",
+  nativeLabel: "Pilipinas",
+  nameOrder: "given-family",
+  surnames: [
+    "Santos",
+    "Reyes",
+    "Cruz",
+    "Bautista",
+    "Garcia",
+    "Mendoza",
+    "Torres",
+    "Flores",
+    "Ramos",
+    "Aquino",
+  ],
+  maleGivenNames: [
+    "Jose",
+    "Juan",
+    "Miguel",
+    "Gabriel",
+    "Angelo",
+    "Marco",
+    "Paolo",
+    "Lorenzo",
+    "Rafael",
+    "Nico",
+  ],
+  femaleGivenNames: [
+    "Maria",
+    "Angelica",
+    "Sofia",
+    "Isabella",
+    "Jasmine",
+    "Andrea",
+    "Mikaela",
+    "Bianca",
+    "Ella",
+    "Althea",
+  ],
+  neutralGivenNames: ["Alex", "Jules", "Sam", "Riley", "Angel", "Nico"],
+};
+

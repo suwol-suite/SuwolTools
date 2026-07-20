@@ -1,0 +1,48 @@
+import type { CountryNameData } from "@/data/names/types";
+
+export const deDE: CountryNameData = {
+  id: "de-DE",
+  countryKey: "countries.de-DE",
+  nativeLabel: "Deutschland",
+  nameOrder: "given-family",
+  surnames: [
+    "Muller",
+    "Schmidt",
+    "Schneider",
+    "Fischer",
+    "Weber",
+    "Meyer",
+    "Wagner",
+    "Becker",
+    "Hoffmann",
+    "Schulz",
+    "Koch",
+    "Bauer",
+  ],
+  maleGivenNames: [
+    "Ben",
+    "Paul",
+    "Leon",
+    "Finn",
+    "Jonas",
+    "Noah",
+    "Elias",
+    "Felix",
+    "Maximilian",
+    "Luca",
+  ],
+  femaleGivenNames: [
+    "Emma",
+    "Mia",
+    "Hannah",
+    "Emilia",
+    "Sophia",
+    "Lina",
+    "Marie",
+    "Lena",
+    "Lea",
+    "Anna",
+  ],
+  neutralGivenNames: ["Kim", "Mika", "Noa", "Robin", "Sascha", "Toni"],
+};
+
