@@ -96,6 +96,105 @@ jobs:
           path: release-artifacts/*
           if-no-files-found: error
 
+  macos-validation:
+    name: Validate existing Mac Studio runner
+    needs: prepare
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: [self-hosted, macOS, ARM64]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "${{ env.NODE_VERSION }}"
+          cache: npm
+      - name: Validate host, keychain, signing identity, and secret access
+        shell: bash
+        env:
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+          CSC_LINK: ${{ secrets.CSC_LINK }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          GPG_PRIVATE_KEY_B64: ${{ secrets.GPG_PRIVATE_KEY_B64 }}
+          MAC_KEYCHAIN_PASSWORD: ${{ secrets.MAC_KEYCHAIN_PASSWORD }}
+          NOTARYTOOL_PROFILE: suwol-notary-profile
+          MAC_DEVELOPER_IDENTITY: Developer ID Application
+        run: |
+          set -euo pipefail
+          echo "runner=$(hostname)"
+          echo "architecture=$(uname -m)"
+          sysctl -n hw.model 2>/dev/null || true
+          [[ "$(uname -m)" == "arm64" ]] || { echo "Expected arm64 runner"; exit 1; }
+          node --version
+          npm --version
+
+          missing=()
+          for name in APPLE_APP_SPECIFIC_PASSWORD APPLE_ID APPLE_TEAM_ID CSC_KEY_PASSWORD CSC_LINK GPG_PASSPHRASE GPG_PRIVATE_KEY_B64 MAC_KEYCHAIN_PASSWORD; do
+            if [[ -n "${!name:-}" ]]; then
+              echo "secret_${name}=available"
+            else
+              echo "secret_${name}=unavailable"
+              missing+=("$name")
+            fi
+          done
+          [[ "${#missing[@]}" -eq 0 ]] || { printf '::error::Required organization secrets are not available to this repository: %s\n' "${missing[*]}"; exit 1; }
+
+          login_keychain="$HOME/Library/Keychains/login.keychain-db"
+          [[ -f "$login_keychain" ]] || { echo "login keychain not found: $login_keychain"; exit 1; }
+          security unlock-keychain -p "$MAC_KEYCHAIN_PASSWORD" "$login_keychain"
+          security set-keychain-settings -lut 21600 "$login_keychain"
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$MAC_KEYCHAIN_PASSWORD" "$login_keychain"
+          security default-keychain -s "$login_keychain"
+          security list-keychains -d user -s "$login_keychain"
+          security find-identity -v -p codesigning | grep -F "$MAC_DEVELOPER_IDENTITY"
+
+          if xcrun notarytool history --keychain-profile "$NOTARYTOOL_PROFILE" >/dev/null 2>&1; then
+            echo "notary_profile=existing"
+          else
+            xcrun notarytool store-credentials "$NOTARYTOOL_PROFILE" --apple-id "$APPLE_ID" --team-id "$APPLE_TEAM_ID" --password "$APPLE_APP_SPECIFIC_PASSWORD"
+            xcrun notarytool history --keychain-profile "$NOTARYTOOL_PROFILE" >/dev/null
+            echo "notary_profile=created"
+          fi
+      - name: Install dependencies and verify FFmpeg
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci
+          ffmpeg_path="$(node -p "require.resolve('ffmpeg-static')")"
+          export SUWOL_FFMPEG_MAC_ARM64="$ffmpeg_path"
+          export SUWOL_FFMPEG_MAC_ARM64_SHA256="$(shasum -a 256 "$ffmpeg_path" | cut -d' ' -f1)"
+          export SUWOL_FFMPEG_MAC_ARM64_SOURCE="ffmpeg-static pinned package"
+          npm run prepare:ffmpeg
+          test -x build/ffmpeg/mac-arm64/ffmpeg
+          node --input-type=module <<'NODE'
+          import { createHash } from "node:crypto";
+          import { readFile } from "node:fs/promises";
+          const manifest = JSON.parse(await readFile("build/ffmpeg/manifest.json", "utf8"));
+          const bytes = await readFile("build/ffmpeg/mac-arm64/ffmpeg");
+          const digest = createHash("sha256").update(bytes).digest("hex");
+          if (manifest.binaries["mac-arm64"]?.sha256 !== digest) throw new Error("FFmpeg manifest digest mismatch");
+          console.log("FFmpeg mac-arm64 SHA-256 verified");
+          NODE
+      - name: Verify codesign can create a signed app
+        shell: bash
+        env:
+          MAC_DEVELOPER_IDENTITY: Developer ID Application
+        run: |
+          set -euo pipefail
+          app="$RUNNER_TEMP/suwol-tools-signing-validation.app"
+          rm -rf "$app"
+          mkdir -p "$app/Contents/MacOS"
+          cp /usr/bin/true "$app/Contents/MacOS/suwol-tools-signing-validation"
+          cat > "$app/Contents/Info.plist" <<'PLIST'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict><key>CFBundleExecutable</key><string>suwol-tools-signing-validation</string><key>CFBundleIdentifier</key><string>com.suwol.tools.signing-validation</string><key>CFBundleName</key><string>Suwol Tools Signing Validation</string><key>CFBundleVersion</key><string>1</string><key>CFBundleShortVersionString</key><string>1.0</string></dict></plist>
+          PLIST
+          codesign --force --timestamp --options runtime --sign "$MAC_DEVELOPER_IDENTITY" "$app"
+          codesign --verify --deep --strict --verbose=2 "$app"
+          echo "signed_validation_app=true"
+
   publish-core-release:
     needs: [prepare, windows, linux]
     if: needs.prepare.outputs.is_tag == 'true'
@@ -142,7 +241,7 @@ jobs:
     needs: [prepare, publish-core-release]
     if: needs.prepare.outputs.is_tag == 'true'
     continue-on-error: true
-    runs-on: [self-hosted, macos, macos-arm64, mac-mini-m4]
+    runs-on: [self-hosted, macOS, ARM64]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -159,15 +258,19 @@ jobs:
           security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$MAC_KEYCHAIN_PASSWORD" ~/Library/Keychains/login.keychain-db
           security find-identity -v -p codesigning | grep -F "$MAC_DEVELOPER_IDENTITY"
       - name: Configure notarization profile
+        shell: bash
         env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
           NOTARYTOOL_PROFILE: suwol-notary-profile
         run: |
+          set -euo pipefail
           if ! xcrun notarytool history --keychain-profile "$NOTARYTOOL_PROFILE" >/dev/null 2>&1; then
+            test -n "${APPLE_ID:-}" && test -n "${APPLE_TEAM_ID:-}" && test -n "${APPLE_APP_SPECIFIC_PASSWORD:-}"
             xcrun notarytool store-credentials "$NOTARYTOOL_PROFILE" --apple-id "$APPLE_ID" --team-id "$APPLE_TEAM_ID" --password "$APPLE_APP_SPECIFIC_PASSWORD"
           fi
+          xcrun notarytool history --keychain-profile "$NOTARYTOOL_PROFILE" >/dev/null
       - run: npm ci
       - run: npm run prepare:icons
       - name: Configure bundled FFmpeg
@@ -193,6 +296,14 @@ jobs:
       - run: node scripts/generate-update-metadata.mjs mac
       - run: node scripts/validate-update-metadata.mjs mac
       - run: node scripts/notarize-dmg.mjs
+      - name: Verify stapled DMG and notarized app
+        shell: bash
+        run: |
+          set -euo pipefail
+          dmg=$(find release -maxdepth 1 -type f -name '*-mac-arm64.dmg' -print -quit)
+          test -n "$dmg"
+          xcrun stapler validate -v "$dmg"
+          spctl --assess --type execute --verbose "release/mac-arm64/Suwol Tools.app"
       - run: node scripts/collect-release-artifact.mjs mac
       - run: node scripts/package-smoke-test.mjs mac
       - run: echo ready > release-artifacts/macos-ready.txt
