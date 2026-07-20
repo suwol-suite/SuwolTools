@@ -18,7 +18,12 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const metadataPath = path.join(root, "release", `latest-${platform}.yml`);
   const metadata = parseMetadata(await readFile(metadataPath, "utf8"));
   if (metadata.version !== packageJson.version || !metadata.artifact || !metadata.digest || !metadata.size) throw new Error("Update metadata is incomplete or version-mismatched.");
-  const bytes = await readFile(path.join(root, "release", metadata.artifact));
+  const localArtifact = await access(path.join(root, "release", metadata.artifact)).then(() => metadata.artifact).catch(async () => {
+    const fallback = metadata.artifact.replace("Suwol.Tools-", "Suwol Tools-");
+    await access(path.join(root, "release", fallback));
+    return fallback;
+  });
+  const bytes = await readFile(path.join(root, "release", localArtifact));
   const digest = createHash("sha512").update(bytes).digest("base64");
   if (digest !== metadata.digest || bytes.byteLength !== metadata.size) throw new Error("Update metadata checksum or size mismatch.");
   await access(path.join(root, "release", platform === "linux" ? "latest-linux.yml" : "latest-mac.yml"));

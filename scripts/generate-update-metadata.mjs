@@ -15,9 +15,14 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const packageJson = JSON.parse(await readFile(path.join(root, "package.json"), "utf8"));
   const files = await readdir(path.join(root, "release"), { withFileTypes: true });
   const suffix = platform === "linux" ? "-linux-x64.AppImage" : "-mac-arm64.zip";
-  const artifact = files.find((entry) => entry.isFile() && entry.name === `Suwol Tools-${packageJson.version}${suffix}`)?.name;
-  if (!artifact) throw new Error(`Expected ${suffix} artifact for ${packageJson.version} was not found.`);
-  const bytes = await readFile(path.join(root, "release", artifact));
+  const localArtifact = files.find((entry) => entry.isFile() && [
+    `Suwol.Tools-${packageJson.version}${suffix}`,
+    `Suwol Tools-${packageJson.version}${suffix}`,
+  ].includes(entry.name));
+  if (!localArtifact) throw new Error(`Expected ${suffix} artifact for ${packageJson.version} was not found.`);
+  // GitHub normalizes spaces in uploaded asset names to dots. Keep metadata aligned with the final Release URL.
+  const artifact = `Suwol.Tools-${packageJson.version}${suffix}`;
+  const bytes = await readFile(path.join(root, "release", localArtifact.name));
   await writeFile(path.join(root, "release", `latest-${platform}.yml`), metadataFor(platform, packageJson.version, artifact, bytes), "utf8");
   console.log(`Generated latest-${platform}.yml for ${artifact}.`);
 }
