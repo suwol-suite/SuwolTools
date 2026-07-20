@@ -348,7 +348,12 @@ jobs:
         run: |
           test -f mac-artifacts/macos-ready.txt || { echo "macOS build is not ready; core release remains unchanged"; exit 0; }
           gh release download "${GITHUB_REF_NAME}" --dir release-downloads
-          cp mac-artifacts/Suwol\ Tools-* mac-artifacts/latest-mac.yml release-downloads/
+          rm -f release-downloads/Suwol.Tools-*-mac-arm64.* release-downloads/Suwol\ Tools-*-mac-arm64.*
+          for source in mac-artifacts/Suwol\ Tools-*; do
+            name="$(basename "$source" | sed 's/^Suwol Tools-/Suwol.Tools-/')"
+            cp "$source" "release-downloads/$name"
+          done
+          cp mac-artifacts/latest-mac.yml release-downloads/
           rm -f release-downloads/checksums.txt release-downloads/checksums.txt.asc
           npm run release:checksums -- release-downloads
           export GNUPGHOME="$RUNNER_TEMP/gnupg"
@@ -358,4 +363,7 @@ jobs:
           gpg --batch --pinentry-mode loopback --passphrase "$GPG_PASSPHRASE" --detach-sign --armor release-downloads/checksums.txt
           (cd release-downloads && sha256sum -c checksums.txt)
           gpg --verify release-downloads/checksums.txt.asc release-downloads/checksums.txt
-          gh release upload "${GITHUB_REF_NAME}" release-downloads/* --clobber
+          for asset in release-downloads/*; do
+            gh release delete-asset "${GITHUB_REF_NAME}" "$(basename "$asset")" --yes 2>/dev/null || true
+          done
+          gh release upload "${GITHUB_REF_NAME}" release-downloads/*
