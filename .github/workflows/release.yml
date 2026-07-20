@@ -161,7 +161,7 @@ jobs:
         run: |
           set -euo pipefail
           npm ci
-          ffmpeg_path="$(node -p "require.resolve('ffmpeg-static')")"
+          ffmpeg_path="$(node -p "require('ffmpeg-static')")"
           export SUWOL_FFMPEG_MAC_ARM64="$ffmpeg_path"
           export SUWOL_FFMPEG_MAC_ARM64_SHA256="$(shasum -a 256 "$ffmpeg_path" | cut -d' ' -f1)"
           export SUWOL_FFMPEG_MAC_ARM64_SOURCE="ffmpeg-static pinned package"
@@ -275,7 +275,7 @@ jobs:
       - run: npm run prepare:icons
       - name: Configure bundled FFmpeg
         run: |
-          path=$(node -p "require.resolve('ffmpeg-static')")
+          path=$(node -p "require('ffmpeg-static')")
           echo "SUWOL_FFMPEG_MAC_ARM64=$path" >> "$GITHUB_ENV"
           echo "SUWOL_FFMPEG_MAC_ARM64_SHA256=$(shasum -a 256 "$path" | cut -d' ' -f1)" >> "$GITHUB_ENV"
           echo "SUWOL_FFMPEG_MAC_ARM64_SOURCE=ffmpeg-static pinned package" >> "$GITHUB_ENV"
