@@ -1,0 +1,1 @@
+export declare function sortAndDeduplicateLines(input: string, options: { direction: "none" | "asc" | "desc"; deduplicate: boolean; removeEmpty: boolean; trimWhitespace: boolean; caseInsensitive: boolean }): { text: string; inputLineCount: number; outputLineCount: number; removedLineCount: number };

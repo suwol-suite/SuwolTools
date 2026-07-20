@@ -1,0 +1,1 @@
+export declare function generateSitemapXml(config: { urlsText: string; changefreq: "always" | "hourly" | "daily" | "weekly" | "monthly" | "yearly" | "never"; priority: string; includeLastmod: boolean }): { xml: string; validUrls: string[]; invalidUrls: string[] };

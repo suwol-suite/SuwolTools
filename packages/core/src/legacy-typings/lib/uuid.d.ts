@@ -1,0 +1,1 @@
+export declare function generateManyUuids(options: { version: "v1" | "v3" | "v4" | "v5" | "v6" | "v7"; namespace?: string; name?: string; outputFormat?: "lowercase" | "uppercase" | "braces" | "urn" | "compact" }, count: number): Promise<string[]>;

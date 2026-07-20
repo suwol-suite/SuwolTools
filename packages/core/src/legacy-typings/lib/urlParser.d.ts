@@ -1,0 +1,1 @@
+export declare function parseUrlInput(input: string, decodeValues: boolean): { href: string; protocol: string; username: string; password: string; hostname: string; port: string; pathname: string; search: string; hash: string; origin: string; queryParams: Array<{ key: string; value: string }> };

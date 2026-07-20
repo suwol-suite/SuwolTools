@@ -1,0 +1,2 @@
+export declare const defaultPasswordOptions: { length: number; count: number; includeUppercase: boolean; includeLowercase: boolean; includeNumbers: boolean; includeSymbols: boolean; excludeAmbiguous: boolean };
+export declare function generatePasswords(options: { length: number; count: number; includeUppercase: boolean; includeLowercase: boolean; includeNumbers: boolean; includeSymbols: boolean; excludeAmbiguous: boolean }): string[];

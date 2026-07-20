@@ -1,0 +1,59 @@
+appId: com.suwol.tools
+productName: Suwol Tools
+artifactName: ${productName}-${version}-${os}-${arch}.${ext}
+asar: true
+forceCodeSigning: false
+directories:
+  output: release
+  buildResources: build
+publish:
+  provider: github
+  owner: suwol-suite
+  repo: SuwolTools
+  releaseType: release
+files:
+  - dist-electron/**
+  - dist-renderer/**
+  - dist-web/**
+  - package.json
+  - THIRD_PARTY_NOTICES.md
+extraResources:
+  - from: build/ffmpeg
+    to: ffmpeg
+win:
+  icon: build/icons/icon.ico
+  signAndEditExecutable: true
+  target:
+    - target: nsis
+      arch: [x64]
+    - target: portable
+      arch: [x64]
+nsis:
+  artifactName: ${productName}-${version}-win-${arch}-setup.${ext}
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  deleteAppDataOnUninstall: false
+portable:
+  artifactName: ${productName}-${version}-win-${arch}-portable.${ext}
+mac:
+  icon: build/icons/icon.icns
+  artifactName: ${productName}-${version}-mac-${arch}.${ext}
+  target:
+    - target: dmg
+      arch: [arm64]
+    - target: zip
+      arch: [arm64]
+  category: public.app-category.productivity
+  hardenedRuntime: true
+  gatekeeperAssess: false
+  entitlements: build/entitlements.mac.plist
+  entitlementsInherit: build/entitlements.mac.inherit.plist
+linux:
+  icon: build/icons
+  artifactName: ${productName}-${version}-linux-x64.${ext}
+  target:
+    - target: AppImage
+      arch: [x64]
+    - target: tar.gz
+      arch: [x64]
+  category: Utility

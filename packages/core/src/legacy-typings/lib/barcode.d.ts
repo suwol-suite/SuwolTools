@@ -1,0 +1,1 @@
+export declare function generateBarcodeSvg(value: string, options: { format: "CODE128" | "CODE39" | "EAN13" | "EAN8" | "UPC" | "ITF14" | "MSI" | "pharmacode"; width: number; height: number; margin: number; displayValue: boolean; fontSize: number; lineColor: string; background: string }): { svg: string; width: number; height: number; value: string };

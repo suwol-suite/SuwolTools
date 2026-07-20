@@ -1,0 +1,2 @@
+export declare function createQrMatrix(input: string, level: "L" | "M" | "Q" | "H"): { modules: boolean[][]; version: number; size: number };
+export declare function qrMatrixToSvg(matrix: { modules: boolean[][]; version: number; size: number }, options: { size: number; margin: number; foregroundColor: string; backgroundColor: string; errorCorrectionLevel: "L" | "M" | "Q" | "H"; transparentBackground: boolean }): string;

@@ -1,0 +1,1 @@
+export declare function generateRobotsTxt(config: { mode: "allowAll" | "blockAll" | "custom"; userAgent: string; allowPaths: string; disallowPaths: string; sitemapUrl: string; crawlDelay: string }): string;

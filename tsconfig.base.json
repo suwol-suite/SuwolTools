@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@suwol/shared": ["packages/shared/src/index.ts"],
+      "@suwol/core": ["packages/core/src/index.ts"],
+      "@legacy/lib/*": ["packages/core/src/legacy-typings/lib/*"],
+      "@legacy/*": ["../SuwolWebTools/src/*"],
+      "@/*": ["../SuwolWebTools/src/*"]
+    },
+    "target": "ES2022",
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "verbatimModuleSyntax": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true
+  }
+}

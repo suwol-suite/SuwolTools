@@ -1,0 +1,14 @@
+export declare function encodeBase64(value: string): string;
+export declare function decodeBase64(value: string): string;
+export declare function encodeUrlComponent(value: string): string;
+export declare function decodeUrlComponent(value: string): string;
+export declare function escapeHtml(value: string): string;
+export declare function unescapeHtml(value: string): string;
+export declare function escapeJsonString(value: string): string;
+export declare function unescapeJsonString(value: string): string;
+export declare function escapeUnicode(value: string): string;
+export declare function unescapeUnicode(value: string): string;
+export declare function textToHex(value: string): string;
+export declare function hexToText(value: string): string;
+export declare function textToBinary(value: string): string;
+export declare function binaryToText(value: string): string;

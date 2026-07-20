@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "platforms": {
+    "win-x64": { "environment": "SUWOL_FFMPEG_WIN_X64", "optional": true },
+    "mac-arm64": { "environment": "SUWOL_FFMPEG_MAC_ARM64", "optional": true },
+    "mac-x64": { "environment": "SUWOL_FFMPEG_MAC_X64", "optional": true },
+    "linux-x64": { "environment": "SUWOL_FFMPEG_LINUX_X64", "optional": true }
+  }
+}

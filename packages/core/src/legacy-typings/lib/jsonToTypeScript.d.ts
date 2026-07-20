@@ -1,0 +1,1 @@
+export declare function generateTypeScriptFromJson(input: string, options: { rootName: string; outputKind: "interface" | "type"; optionalProperties: boolean; separateNestedTypes: boolean; nullAsOptional: boolean }): string;

@@ -1,0 +1,247 @@
+name: Release Suwol Tools
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: release-${{ github.ref_name }}
+  cancel-in-progress: false
+
+env:
+  NODE_VERSION: 22
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      is_tag: ${{ steps.version.outputs.is_tag }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: version
+        shell: bash
+        run: |
+          version=$(node -p "require('./package.json').version")
+          is_tag=false
+          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
+            [[ "${GITHUB_REF_NAME}" == "v${version}" ]] || { echo "Tag ${GITHUB_REF_NAME} does not match v${version}"; exit 1; }
+            is_tag=true
+          fi
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+          echo "is_tag=${is_tag}" >> "$GITHUB_OUTPUT"
+
+  windows:
+    needs: prepare
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "${{ env.NODE_VERSION }}"
+          cache: npm
+      - run: npm ci
+      - run: npm run prepare:icons
+      - run: npm run prepare:ffmpeg
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test
+      - run: npm run package:win
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+      - run: node scripts/package-smoke-test.mjs win
+      - run: node scripts/collect-release-artifact.mjs win
+      - uses: actions/upload-artifact@v4
+        with:
+          name: suwol-tools-win-x64
+          path: release-artifacts/*
+          if-no-files-found: error
+
+  linux:
+    needs: prepare
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "${{ env.NODE_VERSION }}"
+          cache: npm
+      - name: Install runtime libraries
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg libgtk-3-0 libnss3 libxss1 libasound2t64 libgbm1 libfuse2
+      - run: npm ci
+      - run: npm run prepare:icons
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test
+      - name: Configure FFmpeg resource
+        shell: bash
+        run: |
+          path=$(command -v ffmpeg)
+          echo "SUWOL_FFMPEG_LINUX_X64=${path}" >> "$GITHUB_ENV"
+          echo "SUWOL_FFMPEG_LINUX_X64_SHA256=$(sha256sum "$path" | cut -d' ' -f1)" >> "$GITHUB_ENV"
+          echo "SUWOL_FFMPEG_LINUX_X64_SOURCE=Ubuntu ffmpeg package" >> "$GITHUB_ENV"
+      - run: npm run package:linux
+      - run: node scripts/generate-update-metadata.mjs linux
+      - run: node scripts/validate-update-metadata.mjs linux
+      - run: node scripts/package-smoke-test.mjs linux
+      - run: node scripts/collect-release-artifact.mjs linux
+      - uses: actions/upload-artifact@v4
+        with:
+          name: suwol-tools-linux-x64
+          path: release-artifacts/*
+          if-no-files-found: error
+
+  publish-core-release:
+    needs: [prepare, windows, linux]
+    if: needs.prepare.outputs.is_tag == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "${{ env.NODE_VERSION }}"
+          cache: npm
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: suwol-tools-*
+          path: release-downloads
+          merge-multiple: true
+      - name: Create and verify checksums
+        shell: bash
+        env:
+          GPG_PRIVATE_KEY_B64: ${{ secrets.GPG_PRIVATE_KEY_B64 }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        run: |
+          npm run release:checksums -- release-downloads
+          test -n "$GPG_PRIVATE_KEY_B64" && test -n "$GPG_PASSPHRASE"
+          export GNUPGHOME="$RUNNER_TEMP/gnupg"
+          trap 'rm -rf "$GNUPGHOME"' EXIT
+          mkdir -m 700 "$GNUPGHOME"
+          echo "$GPG_PRIVATE_KEY_B64" | base64 --decode | gpg --batch --import
+          gpg --batch --pinentry-mode loopback --passphrase "$GPG_PASSPHRASE" --detach-sign --armor release-downloads/checksums.txt
+          (cd release-downloads && sha256sum -c checksums.txt)
+          gpg --verify release-downloads/checksums.txt.asc release-downloads/checksums.txt
+      - name: Publish Windows and Linux assets
+        env:
+          GH_TOKEN: "${{ github.token }}"
+        run: |
+          cp suwol-release-public-key.asc release-downloads/ 2>/dev/null || true
+          notes="docs/release-notes-${GITHUB_REF_NAME#v}.md"
+          [[ -f "$notes" ]] || notes="docs/release-notes-template.md"
+          gh release view "${GITHUB_REF_NAME}" >/dev/null 2>&1 || gh release create "${GITHUB_REF_NAME}" --title "Suwol Tools ${GITHUB_REF_NAME#v}" --notes-file "$notes"
+          gh release upload "${GITHUB_REF_NAME}" release-downloads/* --clobber
+          gh release delete-asset "${GITHUB_REF_NAME}" latest.yml --yes 2>/dev/null || true
+
+  macos:
+    needs: [prepare, publish-core-release]
+    if: needs.prepare.outputs.is_tag == 'true'
+    continue-on-error: true
+    runs-on: [self-hosted, macOS, ARM64]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "${{ env.NODE_VERSION }}"
+          cache: npm
+      - name: Validate signing and unlock keychain
+        env:
+          MAC_KEYCHAIN_PASSWORD: ${{ secrets.MAC_KEYCHAIN_PASSWORD }}
+          MAC_DEVELOPER_IDENTITY: Developer ID Application
+        run: |
+          security unlock-keychain -p "$MAC_KEYCHAIN_PASSWORD" ~/Library/Keychains/login.keychain-db
+          security set-keychain-settings -lut 21600 ~/Library/Keychains/login.keychain-db
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$MAC_KEYCHAIN_PASSWORD" ~/Library/Keychains/login.keychain-db
+          security find-identity -v -p codesigning | grep -F "$MAC_DEVELOPER_IDENTITY"
+      - name: Configure notarization profile
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          NOTARYTOOL_PROFILE: suwol-tools-notary-profile
+        run: |
+          if ! xcrun notarytool history --keychain-profile "$NOTARYTOOL_PROFILE" >/dev/null 2>&1; then
+            xcrun notarytool store-credentials "$NOTARYTOOL_PROFILE" --apple-id "$APPLE_ID" --team-id "$APPLE_TEAM_ID" --password "$APPLE_APP_SPECIFIC_PASSWORD"
+          fi
+      - run: npm ci
+      - run: npm run prepare:icons
+      - name: Configure bundled FFmpeg
+        run: |
+          path=$(node -p "require.resolve('ffmpeg-static')")
+          echo "SUWOL_FFMPEG_MAC_ARM64=$path" >> "$GITHUB_ENV"
+          echo "SUWOL_FFMPEG_MAC_ARM64_SHA256=$(shasum -a 256 "$path" | cut -d' ' -f1)" >> "$GITHUB_ENV"
+          echo "SUWOL_FFMPEG_MAC_ARM64_SOURCE=ffmpeg-static pinned package" >> "$GITHUB_ENV"
+          echo "REQUIRE_MAC_SIGNING=1" >> "$GITHUB_ENV"
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test
+      - run: npm run package:mac:release
+        env:
+          CSC_LINK: ${{ secrets.CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+          CSC_KEYCHAIN: login
+          REQUIRE_MAC_SIGNING: 1
+      - name: Verify signed application
+        run: |
+          codesign --verify --deep --strict "release/mac-arm64/Suwol Tools.app"
+          spctl --assess --type execute --verbose "release/mac-arm64/Suwol Tools.app"
+      - run: node scripts/generate-update-metadata.mjs mac
+      - run: node scripts/validate-update-metadata.mjs mac
+      - run: node scripts/notarize-dmg.mjs
+      - run: node scripts/collect-release-artifact.mjs mac
+      - run: node scripts/package-smoke-test.mjs mac
+      - run: echo ready > release-artifacts/macos-ready.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: suwol-tools-mac-arm64
+          path: release-artifacts/*
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: suwol-tools-mac-diagnostics
+          path: diagnostics/*
+          if-no-files-found: ignore
+
+  attach-macos:
+    needs: [prepare, publish-core-release, macos]
+    if: always() && needs.prepare.outputs.is_tag == 'true' && needs.publish-core-release.result == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "${{ env.NODE_VERSION }}"
+          cache: npm
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: suwol-tools-mac-arm64
+          path: mac-artifacts
+      - name: Attach macOS assets only after ready marker
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GPG_PRIVATE_KEY_B64: ${{ secrets.GPG_PRIVATE_KEY_B64 }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        shell: bash
+        run: |
+          test -f mac-artifacts/macos-ready.txt || { echo "macOS build is not ready; core release remains unchanged"; exit 0; }
+          gh release download "${GITHUB_REF_NAME}" --dir release-downloads
+          cp mac-artifacts/Suwol\ Tools-* mac-artifacts/latest-mac.yml release-downloads/
+          rm -f release-downloads/checksums.txt release-downloads/checksums.txt.asc
+          npm run release:checksums -- release-downloads
+          export GNUPGHOME="$RUNNER_TEMP/gnupg"
+          trap 'rm -rf "$GNUPGHOME"' EXIT
+          mkdir -m 700 "$GNUPGHOME"
+          echo "$GPG_PRIVATE_KEY_B64" | base64 --decode | gpg --batch --import
+          gpg --batch --pinentry-mode loopback --passphrase "$GPG_PASSPHRASE" --detach-sign --armor release-downloads/checksums.txt
+          (cd release-downloads && sha256sum -c checksums.txt)
+          gpg --verify release-downloads/checksums.txt.asc release-downloads/checksums.txt
+          gh release upload "${GITHUB_REF_NAME}" release-downloads/* --clobber

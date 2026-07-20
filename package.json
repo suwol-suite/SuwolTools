@@ -1,0 +1,129 @@
+{
+  "name": "suwol-tools",
+  "productName": "Suwol Tools",
+  "version": "0.1.0",
+  "private": true,
+  "author": "Suwol",
+  "type": "module",
+  "description": "Shared web and Electron desktop tools for local file workflows.",
+  "main": "dist-electron/main.js",
+  "scripts": {
+    "dev": "concurrently -k \"vite --config vite.web.config.ts\" \"npm run dev:electron\"",
+    "dev:web": "vite --config vite.web.config.ts",
+    "dev:electron": "npm run build:electron && electron dist-electron/main.js",
+    "typecheck": "tsc -p tsconfig.node.json --noEmit && tsc -p tsconfig.web.json --noEmit",
+    "lint": "eslint . --ext .ts,.tsx",
+    "test": "vitest run",
+    "qa:remaining": "vite-node --config vitest.config.ts scripts/verify-remaining.mts",
+    "build:web": "vite build --config vite.web.config.ts",
+    "prepare:ffmpeg": "node scripts/prepare-ffmpeg.mjs",
+    "build:electron": "npm run prepare:icons && npm run prepare:ffmpeg && node scripts/build-electron.mjs",
+    "build": "npm run typecheck && npm run build:web && npm run build:electron",
+    "package:win": "npm run build && electron-builder --config electron-builder.yml --win nsis portable --x64 --publish never && node scripts/remove-windows-update-metadata.mjs",
+    "package:mac": "npm run build && electron-builder --config electron-builder.yml --mac dmg zip --arm64 --publish never",
+    "package:mac:release": "npm run build && electron-builder --config electron-builder.yml --config.forceCodeSigning=true --mac dmg zip --arm64 --publish never",
+    "package:linux": "npm run build && electron-builder --config electron-builder.yml --linux AppImage tar.gz --x64 --publish never",
+    "release:collect": "node scripts/collect-release-artifact.mjs",
+    "release:metadata": "node scripts/generate-update-metadata.mjs",
+    "release:validate-metadata": "node scripts/validate-update-metadata.mjs",
+    "release:checksums": "node scripts/create-release-checksums.mjs",
+    "package:smoke": "node scripts/package-smoke-test.mjs",
+    "release:notarize": "node scripts/notarize-dmg.mjs",
+    "release:resign": "node scripts/resign-mac-app.mjs",
+    "prepare:icons": "node scripts/generate-icons.mjs",
+    "qa:windows": "npm run package:win",
+    "package": "npm run build && electron-builder --config electron-builder.yml --publish never"
+  },
+  "dependencies": {
+    "@napi-rs/canvas": "^1.0.2",
+    "@vitejs/plugin-react": "^5.1.1",
+    "@xmldom/xmldom": "^0.8.13",
+    "electron-updater": "^6.8.9",
+    "ffmpeg-static": "^5.3.0",
+    "jszip": "^3.10.1",
+    "linkedom": "^0.18.13",
+    "pdf-lib": "^1.17.1",
+    "pdfjs-dist": "^4.10.38",
+    "png2icons": "^2.0.1",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "sharp": "^0.34.3",
+    "vite": "^7.0.0",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
+    "concurrently": "^9.0.0",
+    "electron": "^43.0.0",
+    "electron-builder": "^26.0.0",
+    "electron-vite": "^5.0.0",
+    "eslint": "^9.0.0",
+    "typescript": "^5.8.0",
+    "vitest": "^3.0.0",
+    "wait-on": "^8.0.0"
+  },
+  "build": {
+    "appId": "com.suwol.tools",
+    "productName": "Suwol Tools",
+    "asar": true,
+    "forceCodeSigning": false,
+    "files": [
+      "dist-electron/**",
+      "dist-renderer/**",
+      "dist-web/**",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "build/ffmpeg",
+        "to": "ffmpeg"
+      }
+    ],
+    "directories": {
+      "output": "release"
+    },
+    "win": {
+      "icon": "build/icons/icon.ico",
+      "signAndEditExecutable": true,
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "deleteAppDataOnUninstall": false
+    },
+    "mac": {
+      "icon": "build/icons/icon.icns",
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "category": "public.app-category.productivity"
+    },
+    "linux": {
+      "icon": "build/icons",
+      "target": [
+        "AppImage",
+        "tar.gz"
+      ],
+      "category": "Utility"
+    }
+  }
+}

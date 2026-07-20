@@ -1,0 +1,16 @@
+export type MarkdownDelimiter = "comma" | "semicolon" | "tab" | "pipe" | "custom";
+export type MarkdownAlignment = "default" | "left" | "center" | "right";
+export type ChecklistMode = "unchecked" | "checked" | "plain" | "toggle";
+export type ChecklistEmptyLineMode = "keep" | "remove";
+export type PlainTextTableMode = "plain" | "tsv" | "remove";
+export declare function markdownToHtml(input: string, options: { pretty: boolean; sanitize: boolean; preserveLineBreaks: boolean; openLinksNewTab: boolean }): string;
+export declare function htmlToMarkdown(input: string): string;
+export declare function sanitizeHtml(input: string): string;
+export declare function csvToMarkdownTable(input: string, options: { delimiter: MarkdownDelimiter; customDelimiter: string; firstRowHeader: boolean; trimCells: boolean; escapePipe: boolean; quoteCsvValues: boolean; alignment: MarkdownAlignment }): string;
+export declare function markdownTableToCsv(input: string, options: { delimiter: MarkdownDelimiter; customDelimiter: string; firstRowHeader: boolean; trimCells: boolean; escapePipe: boolean; quoteCsvValues: boolean; alignment: MarkdownAlignment }): string;
+export declare function parseDelimitedRows(input: string, delimiter: string, trimCells: boolean): string[][];
+export declare function buildMarkdownTable(headers: string[], rows: string[][], alignments: MarkdownAlignment[], escapePipe?: boolean): string;
+export declare function generateMarkdownToc(input: string, options: { minLevel: number; maxLevel: number; numbered: boolean; bullet: "-" | "*"; includeTitle: boolean }): string;
+export declare function cleanMarkdown(input: string, options: { removeTrailingSpaces: boolean; normalizeBlankLines: boolean; normalizeHeadings: boolean; normalizeListMarkers: boolean; tabsToSpaces: boolean; trimDocument: boolean; lineEndings: "lf" | "crlf" }): { text: string; changedCharacters: number; changedLines: number };
+export declare function convertChecklist(input: string, mode: ChecklistMode, emptyLineMode: ChecklistEmptyLineMode, preserveBullet: boolean, bullet: "-" | "*"): string;
+export declare function markdownToPlainText(input: string, options: { includeUrls: boolean; keepCodeBlocks: boolean; removeImages: boolean; preserveListMarkers: boolean; tableMode: PlainTextTableMode }): string;

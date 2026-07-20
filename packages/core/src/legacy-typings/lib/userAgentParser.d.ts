@@ -1,0 +1,1 @@
+export declare function parseUserAgent(userAgent: string): { browser: string; version: string; os: string; device: "desktop" | "mobile" | "tablet" | "bot" | "unknown"; engine: string; isBot: boolean };

@@ -1,0 +1,2 @@
+export declare function buildGradientValue(options: { type: "linear" | "radial" | "conic"; angle: number; radialShape: "circle" | "ellipse"; position: string; repeating: boolean; stops: Array<{ color: string; position: number }> }): string;
+export declare function buildCssOutput(options: { className: string; declarations: Array<{ property: string; value: string }>; outputMode: "class" | "inline"; extraRules?: unknown[] }): string;

@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "types": ["node"],
+    "noEmit": true
+  },
+  "include": ["packages/shared/src/**/*.ts", "packages/core/src/**/*.ts", "apps/desktop/src/main/**/*.ts", "apps/desktop/src/preload/**/*.ts", "vite.*.config.ts"]
+}
