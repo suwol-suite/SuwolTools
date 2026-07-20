@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { access, mkdir, mkdtemp, readFile, rename, rm, writeFile } from "node:fs/promises";
+import { access, cp, mkdir, mkdtemp, readFile, rename, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -123,7 +123,12 @@ async function main() {
     };
     await writeOutput("manifest.json", Buffer.from(`${JSON.stringify(manifest, null, 2)}\n`, "utf8"));
     await rm(outputPath, { recursive: true, force: true });
-    await rename(temporaryOutput, outputPath);
+    try {
+      await rename(temporaryOutput, outputPath);
+    } catch (error) {
+      if (error?.code !== "EXDEV") throw error;
+      await cp(temporaryOutput, outputPath, { recursive: true, force: true });
+    }
   } catch (error) {
     await rm(temporaryRoot, { recursive: true, force: true });
     throw error;
