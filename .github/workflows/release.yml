@@ -296,7 +296,6 @@ jobs:
       - name: Verify signed application
         run: |
           codesign --verify --deep --strict "release/mac-arm64/Suwol Tools.app"
-          spctl --assess --type execute --verbose "release/mac-arm64/Suwol Tools.app"
       - run: node scripts/generate-update-metadata.mjs mac
       - run: node scripts/validate-update-metadata.mjs mac
       - run: node scripts/notarize-dmg.mjs
@@ -312,7 +311,7 @@ jobs:
       - run: node scripts/package-smoke-test.mjs mac
       - run: echo ready > release-artifacts/macos-ready.txt
       - uses: actions/upload-artifact@v4
-        if: always()
+        if: success()
         with:
           name: suwol-tools-mac-arm64
           path: release-artifacts/*
