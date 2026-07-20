@@ -182,6 +182,9 @@ jobs:
           MAC_DEVELOPER_IDENTITY: Developer ID Application
         run: |
           set -euo pipefail
+          login_keychain="$HOME/Library/Keychains/login.keychain-db"
+          signing_identity=$(security find-identity -v -p codesigning | sed -n 's/.*"\(Developer ID Application:.*\)"/\1/p' | head -n 1)
+          [[ -n "$signing_identity" ]] || { echo "Developer ID Application identity not found"; exit 1; }
           app="$RUNNER_TEMP/suwol-tools-signing-validation.app"
           rm -rf "$app"
           mkdir -p "$app/Contents/MacOS"
@@ -191,7 +194,7 @@ jobs:
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
           <plist version="1.0"><dict><key>CFBundleExecutable</key><string>suwol-tools-signing-validation</string><key>CFBundleIdentifier</key><string>com.suwol.tools.signing-validation</string><key>CFBundleName</key><string>Suwol Tools Signing Validation</string><key>CFBundleVersion</key><string>1</string><key>CFBundleShortVersionString</key><string>1.0</string></dict></plist>
           PLIST
-          codesign --force --timestamp --options runtime --sign "$MAC_DEVELOPER_IDENTITY" "$app"
+          codesign --force --options runtime --keychain "$login_keychain" --sign "$signing_identity" "$app"
           codesign --verify --deep --strict --verbose=2 "$app"
           echo "signed_validation_app=true"
 
